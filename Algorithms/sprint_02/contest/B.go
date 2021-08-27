@@ -2,9 +2,9 @@ package main
 
 import "fmt"
 
-func Solution(head *ListNode) {
+func Solution_B(head *ListNode) {
 	fmt.Println(head.data)
 	if head.next != nil {
-		Solution(head.next)
+		Solution_B(head.next)
 	}
 }
