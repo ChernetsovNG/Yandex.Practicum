@@ -21,36 +21,36 @@ func newQueueSized(n int) QueueSized {
 	return QueueSized{0, 0, 0, n, make([]int, n)}
 }
 
-func (queueSized *QueueSized) push(x int) error {
-	if queueSized.size != queueSized.maxN {
-		queueSized.queue[queueSized.tail] = x
-		queueSized.tail = (queueSized.tail + 1) % queueSized.maxN
-		queueSized.size += 1
+func (queue *QueueSized) push(x int) error {
+	if queue.size != queue.maxN {
+		queue.queue[queue.tail] = x
+		queue.tail = (queue.tail + 1) % queue.maxN
+		queue.size += 1
 		return nil
 	} else {
 		return errors.New("queue is full")
 	}
 }
 
-func (queueSized *QueueSized) pop() (int, error) {
-	if queueSized.isEmpty() {
+func (queue *QueueSized) pop() (int, error) {
+	if queue.isEmpty() {
 		return 0, errors.New("queue is empty")
 	}
-	x := queueSized.queue[queueSized.head]
-	queueSized.head = (queueSized.head + 1) % queueSized.maxN
-	queueSized.size -= 1
+	x := queue.queue[queue.head]
+	queue.head = (queue.head + 1) % queue.maxN
+	queue.size -= 1
 	return x, nil
 }
 
-func (queueSized *QueueSized) peek() (int, error) {
-	if queueSized.isEmpty() {
+func (queue *QueueSized) peek() (int, error) {
+	if queue.isEmpty() {
 		return 0, errors.New("queue is empty")
 	}
-	return queueSized.queue[queueSized.head], nil
+	return queue.queue[queue.head], nil
 }
 
-func (queueSized *QueueSized) isEmpty() bool {
-	return queueSized.size == 0
+func (queue *QueueSized) isEmpty() bool {
+	return queue.size == 0
 }
 
 func main() {
