@@ -1,6 +1,6 @@
 package main
 
-func getNodeByIndex(node *ListNode, index int) *ListNode {
+/*func getNodeByIndex(node *ListNode, index int) *ListNode {
 	for true {
 		if index <= 0 {
 			break
@@ -32,4 +32,4 @@ func Solution_C(head *ListNode, idx int) *ListNode {
 
 		return head
 	}
-}
+}*/
