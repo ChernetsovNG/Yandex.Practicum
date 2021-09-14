@@ -9,43 +9,9 @@ import (
 	"strings"
 )
 
-func mergeSort(left, right []int) []int {
-	result := make([]int, len(left)+len(right))
-
-	l, r, k := 0, 0, 0
-	for true {
-		if l >= len(left) || r >= len(right) {
-			break
-		}
-		if left[l] <= right[r] {
-			result[k] = left[l]
-			l += 1
-		} else {
-			result[k] = right[r]
-			r += 1
-		}
-		k += 1
-	}
-
-	for true {
-		if l >= len(left) {
-			break
-		}
-		result[k] = left[l]
-		l += 1
-		k += 1
-	}
-
-	for true {
-		if r >= len(right) {
-			break
-		}
-		result[k] = right[r]
-		r += 1
-		k += 1
-	}
-
-	return result
+type kv struct {
+	key   int
+	value int
 }
 
 func main() {
@@ -86,14 +52,42 @@ func main() {
 	// сортируем массив площадей
 	sort.Ints(squares)
 
-	// массив расстояний между минимальной площадью и всеми остальными
-	distances := make([]int, n-1)
-	for i := 1; i < n; i++ {
-		distances[i-1] = abs(squares[0] - squares[i])
+	deltasCountMap := make(map[int]int)
+	var delta int
+	for i := 0; i < n; i++ {
+		for j := i + 1; j < n; j++ {
+			s1 := squares[i]
+			s2 := squares[j]
+			delta = abs(s1 - s2)
+			deltasCountMap[delta] += 1
+		}
 	}
 
-	fmt.Println(distances)
-	fmt.Println(k)
+	// сортируем словарь по возрастанию delta
+	var ss []kv
+	for k, v := range deltasCountMap {
+		ss = append(ss, kv{k, v})
+	}
+
+	sort.Slice(ss, func(i, j int) bool {
+		return ss[i].key < ss[j].key
+	})
+
+	var keyValue kv
+	var deltaKey, count, overall, result int
+	overall = 0
+	for i := 0; i < len(ss); i++ {
+		keyValue = ss[i]
+		deltaKey = keyValue.key
+		count = keyValue.value
+		overall += count
+		if overall >= k {
+			result = deltaKey
+			break
+		}
+	}
+
+	fmt.Println(result)
 }
 
 func abs(x int) int {
