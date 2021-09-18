@@ -1,8 +1,42 @@
 package main
 
+/*
+https://contest.yandex.ru/contest/23815/run-report/53197070/
+
+-- ПРИНЦИП РАБОТЫ --
+Основа метода - процесс разбиения, который переупорядочивает массив так, чтобы выполнялись три условия:
+- элементы a[j] для некоторого j находится в массиве на своём окончательном месте;
+- элементы от a[lo] до a[j-1] не больше a[j];
+- элементы от a[j+1] до a[hi] не меньше a[j].
+Для полного упорядочивания всего массива выполняется разбиение, а затем рекурсивное применение метода.
+
+-- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
+Поскольку процесс разбиения всегда помещает один элемент на своё окончательное место в массиве, то ясно, что в итоге
+он упорядочит весь массив.
+
+-- ВРЕМЕННАЯ СЛОЖНОСТЬ --
+Операция разделения массива на две части относительно опорного элемента занимает время O(log n).
+Поскольку все операции разделения, проделываемые на одной глубине рекурсии, обрабатывают разные части исходного массива,
+размер которого постоянен и равен n, то суммарно на каждом уровне рекурсии потребуется также O(n) операций.
+Следовательно, общая сложность алгоритма определяется лишь количеством разделений, то есть глубиной рекурсии.
+Глубина рекурсии зависит от сочетания входных данных и способа определения опорного элемента.
+
+В лучшем случае при каждой операции разделения массив делится на две одинаковы части, следовательно,
+максимальная глубина рекурсии, при которой размеры обрабатываемых подмассивов достигнут 1, составляет O(log n).
+В результате общая сложность алгоритма составит O(n*lon(n)).
+
+В худшем случае каждое разделение даёт два подмассива размерами 1 и n-1, то есть при каждом рекурсивном вызове
+больший массив будет на 1 короче, чем в предыдущий раз. Такое может произойти, если в качестве опорного на каждом
+этапе будет выбран элемент либо наименьший, либо наибольший элемент из всех обрабатываемых.
+В этом случае потребуется n-1 операций разделения, а общее время работы составит O(n^2).
+
+-- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
+Какие-либо дополнительные массивы в алгоритме не используются, сортировка выполняется на месте.
+Поэтому пространственная сложность равна O(1).
+*/
+
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -42,78 +76,70 @@ func cmp(p1 participant, p2 participant) int {
 	}
 }
 
+func quicksort(a []participant, lo, hi int) {
+	if hi <= lo {
+		return
+	}
+	j := partition(a, lo, hi)
+	quicksort(a, lo, j-1)
+	quicksort(a, j+1, hi)
+}
+
 /*
-   less = элементы array, меньшие pivot
-   center = элементы array, равные pivot
-   greater = элементы array, большие pivot
-   return less, center, greater
+Метод помещает a[j] на своё место в отсортированном массиве, и переупорядочивает остальные элементы так, что в левой
+половине все элементы меньше или равны a[j], а в правой - больше или равны
 */
-func partition(arr []participant, pivot participant) ([]participant, []participant, []participant) {
-	var less, center, greater []participant
+func partition(a []participant, lo, hi int) int {
+	// левый и правый индексы просмотра
+	i := lo
+	j := hi + 1
+	v := a[lo] // опорный элемент (произвольно выбираем первый элемент)
 
 	var compareResult int
-	for _, p := range arr {
-		compareResult = cmp(p, pivot)
-		if compareResult == -1 {
-			less = append(less, p)
-		} else if compareResult == 0 {
-			center = append(center, p)
-		} else if compareResult == 1 {
-			greater = append(greater, p)
+	for true {
+		// просматриваем элементы с левого конца, пока не найдём элемент, который больше или равен опорного
+		for true {
+			i += 1
+			compareResult = cmp(a[i], v)
+			if compareResult == 0 || compareResult == 1 {
+				break
+			}
+			if i == hi {
+				break
+			}
 		}
+
+		// просматриваем элементы с правого конца, пока не найдём элементы, который меньше или равен опорного
+		for true {
+			j -= 1
+			compareResult = cmp(v, a[j])
+			if compareResult == 0 || compareResult == 1 {
+				break
+			}
+			if j == lo {
+				break
+			}
+		}
+
+		// проверка на завершение
+		if i >= j {
+			break
+		}
+
+		// обмен
+		swap(a, i, j)
 	}
 
-	return less, center, greater
+	// Помещение опорного элемента на своё место так, что в итоге a[lo...i-1] <= a[i] <= a[i+1...hi]
+	swap(a, lo, j)
+	return j
 }
 
-func quicksort(arr []participant) []participant {
-	if len(arr) < 2 {
-		return arr
-	} else {
-		pivot, _ := medianOf3(arr)
-		less, center, greater := partition(arr, pivot)
-		return merge(quicksort(less), center, quicksort(greater))
-	}
-}
-
-func merge(less, center, greater []participant) []participant {
-	result := make([]participant, len(less)+len(center)+len(greater))
-	k := 0
-	for i := 0; i < len(less); i++ {
-		result[k] = less[i]
-		k += 1
-	}
-	for i := 0; i < len(center); i++ {
-		result[k] = center[i]
-		k += 1
-	}
-	for i := 0; i < len(greater); i++ {
-		result[k] = greater[i]
-		k += 1
-	}
-	return result
-}
-
-func medianOf3(arr []participant) (participant, error) {
-	length := len(arr)
-	if length == 0 {
-		return participant{}, errors.New("empty array")
-	} else if length == 1 {
-		return arr[0], nil
-	} else if length == 2 {
-		return arr[0], nil
-	}
-	first := arr[0]
-	middle := arr[length/2]
-	last := arr[length-1]
-	if cmp(first, middle) == -1 && cmp(middle, last) == -1 {
-		return middle, nil
-	} else if cmp(middle, last) == -1 && cmp(last, first) == -1 {
-		return last, nil
-	} else if cmp(middle, first) == -1 && cmp(first, last) == -1 {
-		return first, nil
-	}
-	return first, nil
+// меняет местами элементы с индексами j, j в массиве a
+func swap(a []participant, i, j int) {
+	tmp := a[i]
+	a[i] = a[j]
+	a[j] = tmp
 }
 
 func main() {
@@ -148,11 +174,11 @@ func main() {
 		participants[i] = participant{login, p, f}
 	}
 
-	// отсортированы по возрастанию
-	sorted := quicksort(participants)
+	// сортируем участников по возрастанию
+	quicksort(participants, 0, n-1)
 
 	// выводим в обратном порядке: от лучшего к худшему
-	for i := len(sorted) - 1; i >= 0; i-- {
-		fmt.Println(sorted[i].login)
+	for i := len(participants) - 1; i >= 0; i-- {
+		fmt.Println(participants[i].login)
 	}
 }
