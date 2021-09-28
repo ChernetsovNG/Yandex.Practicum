@@ -20,7 +20,7 @@ const a = 1000
 const m = 123_987_123
 
 func main() {
-	n := 16
+	n := 12
 	// генерируем строки длины n, пока не найдём строки, вызывающие коллизии
 	hashesStrings := make(map[int]string)
 	generateStrings(n, "", hashesStrings)
@@ -32,7 +32,7 @@ func generateStrings(n int, prefix string, hashes map[int]string) {
 		hash := polynomialHash(a, m, prefix)
 		wasString, ok := hashes[hash]
 		if ok { // нашли коллизию
-			fmt.Printf("collision: str1 = %s, str2 = %s\n", prefix, wasString)
+			fmt.Printf("collision: str1 = %s, str2 = %s, hash = %d\n", prefix, wasString, hash)
 			hashes[hash] = prefix
 		}
 		hashes[hash] = prefix

@@ -36,12 +36,15 @@ func main() {
 
 	scanner.Scan()
 	s = scanner.Text()
+	symbols := []rune(s)
 
 	// делаем предвычисление хеша для всех подстрок исходной строки
 	length := len(s)
 	hashes := make([]int, length)
-	for i := 1; i <= length; i++ {
-		hashes[i-1] = polynomialHash(a, m, s, i)
+	hashes[0] = int(symbols[0]) % m
+
+	for i := 1; i < length; i++ {
+		hashes[i] = (hashes[i-1]*a + (int(symbols[i]))) % m
 	}
 
 	// читаем число запросов t
@@ -61,24 +64,28 @@ func main() {
 		l, _ = strconv.Atoi(split[0])
 		r, _ = strconv.Atoi(split[1])
 
-		// печатаем хеш для подстроки
-		hashR := hashes[r-1]
-		hashL := hashes[l-1]
-		hashL = (hashL * powerByModule(a, l, m)) % m
-
-		hashSubstring := (hashR - hashL) % m
-		fmt.Println(hashSubstring)
+		// вычисляем хеш для подстроки s[l-1...r-1]
+		// h[L...R] = (h[0...R] - h[0...(L-1)]*q^(R-L+1)) mod m
+		var hash int
+		if l <= 1 {
+			hash = hashes[r-1]
+		} else {
+			hash = module(hashes[r-1]-hashes[l-2]*powerByModule(a, r-l+1, m), m)
+		}
+		fmt.Println(hash)
 	}
 }
 
-// хеш для подстроки строки str до символа с индексом indexTo включительно
-func polynomialHash(a, m int, str string, indexTo int) int {
+func polynomialHash(a, m int, str string) int {
 	var hash, symbolCode int
+	var symbol rune
+	n := len(str)
 	symbols := []rune(str)
 	hash = 0
-	for i := 0; i < indexTo; i++ {
-		symbolCode = int(symbols[i])
-		hash = (hash + symbolCode*powerByModule(a, indexTo-1-i, m)) % m
+	for i := 0; i < n; i++ {
+		symbol = symbols[i]
+		symbolCode = int(symbol)
+		hash = (hash + symbolCode*powerByModule(a, n-1-i, m)) % m
 	}
 	return hash
 }
@@ -99,4 +106,12 @@ func powerByModule(b, e, m int) int {
 		}
 	}
 	return result
+}
+
+func module(x, y int) int {
+	if x >= 0 {
+		return x % y
+	} else {
+		return y - ((-x) % y)
+	}
 }
