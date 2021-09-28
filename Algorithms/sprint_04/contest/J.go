@@ -195,39 +195,6 @@ func (c *QuadSet) Size() int {
 	return len(c.container)
 }
 
-// set of integers
-func makeIntSet() *IntSet {
-	return &IntSet{
-		container: make(map[int]bool),
-	}
-}
-
-type IntSet struct {
-	container map[int]bool
-}
-
-func (c *IntSet) Exists(key int) bool {
-	_, exists := c.container[key]
-	return exists
-}
-
-func (c *IntSet) Add(key int) {
-	c.container[key] = true
-}
-
-func (c *IntSet) Remove(key int) error {
-	_, exists := c.container[key]
-	if !exists {
-		return fmt.Errorf("remove error: item doesn't exist in set")
-	}
-	delete(c.container, key)
-	return nil
-}
-
-func (c *IntSet) Size() int {
-	return len(c.container)
-}
-
 // быстрая сортировка четырёх элементов
 func sortFour(a, b, c, d int) (int, int, int, int) {
 	var low1, high1, low2, high2, lowest, middle1, highest, middle2 int
