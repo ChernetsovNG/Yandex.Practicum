@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -29,24 +30,61 @@ func main() {
 	// читаем строку
 	scanner.Scan()
 	s = scanner.Text()
-
-	// читаем строку
-	var s string
-
-	scanner.Scan()
-	s = scanner.Text()
 	symbols := []rune(s)
 
 	// делаем предвычисление хеша для всех подстрок исходной строки длины n
+	var symbolG int
 	length := len(s)
 	hashes := make([]int, length-n+1)
 	hashes[0] = polynomialHash(s[0:n])
 	for i := 1; i < length-n+1; i++ {
 		symbolA := int(symbols[i-1])
-		symbolG := int(symbols[i+n])
-		hashes[i] = (((((hashes[i-1] - symbolA*powerByModule(a, n, m)) % m) * a) % m) + symbolG) % m
+		if i == length-n {
+			symbolG = 0
+		} else {
+			symbolG = int(symbols[i+n-1])
+		}
+		x := module(hashes[i-1]-symbolA*powerByModule(a, n-1, m), m)
+		x = module(x*a, m)
+		x = module(x+symbolG, m)
+		hashes[i] = x
 	}
 
+	// определяем подстроки с одинаковыми хешами
+	hashesIndexes := make(map[int][]int)
+	var hash int
+	for i := 0; i < length-n+1; i++ {
+		hash = hashes[i]
+		indexes, ok := hashesIndexes[hash]
+		if !ok {
+			hashesIndexes[hash] = []int{i}
+		} else {
+			hashesIndexes[hash] = append(indexes, i)
+		}
+	}
+
+	result := []int{}
+	// ищем подстроки, которые встречаются k и более раз
+	for _, indexes := range hashesIndexes {
+		count := 0
+		if len(indexes) >= k {
+			index := indexes[0]
+			// проверяем, что строки по этим индексам действительно совпадают
+			substring := s[index:(index + n)]
+			count += 1
+			for i := 1; i < len(indexes); i++ {
+				index = indexes[i]
+				if substring == s[index:(index+n)] {
+					count += 1
+				}
+			}
+			if count >= k {
+				result = append(result, indexes[0])
+			}
+		}
+	}
+
+	printArray(result)
 }
 
 // основание, по которому вычисляется хеш
@@ -93,4 +131,15 @@ func module(x, y int) int {
 	} else {
 		return y - ((-x) % y)
 	}
+}
+
+func printArray(array []int) {
+	if len(array) == 0 {
+		return
+	}
+	for i := 0; i < len(array)-1; i++ {
+		fmt.Printf("%d", array[i])
+		fmt.Print(" ")
+	}
+	fmt.Printf("%d\n", array[len(array)-1])
 }
