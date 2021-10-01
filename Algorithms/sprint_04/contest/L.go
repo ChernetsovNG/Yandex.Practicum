@@ -63,7 +63,7 @@ func main() {
 		}
 	}
 
-	result := []int{}
+	var result []int
 	// ищем подстроки, которые встречаются k и более раз
 	for _, indexes := range hashesIndexes {
 		count := 0
