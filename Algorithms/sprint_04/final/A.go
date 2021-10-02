@@ -1,7 +1,7 @@
 package main
 
 /*
-https://contest.yandex.ru/contest/24414/run-report/53763938/
+https://contest.yandex.ru/contest/24414/run-report/53771527/
 
 -- ПРИНЦИП РАБОТЫ --
 Каждый документ мы разбиваем на слова, и для каждого слова сохраняем словарь, в котором ключом является
@@ -11,8 +11,6 @@ https://contest.yandex.ru/contest/24414/run-report/53763938/
 находим, в каких документах и сколько раз оно встречалось. Далее выполняется суммирование по всем
 словам запроса, и таким образом вычисляется релевантность всех документов. Полученный результат сортируется
 по релевантности, и берутся первые 5 элементов массива.
-
-Для оптимизации решения результат обработки каждого поискового запроса кешируется.
 
 -- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
 Решение соответствует условию задания в части определения релевантности документа
@@ -27,8 +25,7 @@ https://contest.yandex.ru/contest/24414/run-report/53763938/
 Тогда получение топ-5 документов по релевантности выполняется за время O(m * (w2 + w2*f2 + f2*log(f2)))
 
 -- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
-Мы сохраняем поисковый индекс размера O(w1 * f1). Дополнительно сохраняется кеш поисковых запросов, размер
-которого зависит от количества повторяющихся запросов
+Мы сохраняем поисковый индекс размера O(w1 * f1).
 */
 
 import (
@@ -82,32 +79,19 @@ func main() {
 	m, _ = strconv.Atoi(line)
 
 	// читаем и обрабатываем запросы
-	searchCache := newSearchCache()
-
 	for i := 0; i < m; i++ {
 		// 1. считываем запрос
 		scanner.Scan()
 		line = scanner.Text()
 
-		// если результат был закеширован, то используем его
-		cachedResult, ok := searchCache.cacheElements[line]
-		if ok {
-			topFiveDocuments := cachedResult.topFiveDocuments
-			printArray(writer, topFiveDocuments)
-			continue
-		}
-
 		// 2. по индексу считаем релевантность всех документов
-		uniqueWords := make(map[string]bool) // в запросе нужно рассматривать только уникальные слова
-		words = strings.Split(line, " ")
-		for j := 0; j < len(words); j++ {
-			uniqueWords[words[j]] = true
-		}
+		// в запросе нужно рассматривать только уникальные слова
+		uniqueWords := getUniqueWords(strings.Split(line, " "))
 
 		// для каждого документа - его релевантность
-		documentsRelevance := make(map[int]int)
-		for word := range uniqueWords {
-			documentsCounts, ok := searchIndex[word]
+		documentsRelevance := make([]int, n)
+		for j := 0; j < len(uniqueWords); j++ {
+			documentsCounts, ok := searchIndex[uniqueWords[j]]
 			if ok { // такое слово есть среди документов
 				for documentIndex, count := range documentsCounts {
 					documentsRelevance[documentIndex] += count
@@ -116,77 +100,47 @@ func main() {
 		}
 
 		// 3. сортируем документы по релевантности
-		relevanceArray := make([]kv, len(documentsRelevance))
-		arrIndex := 0
+		var relevanceArray []kv
 		for documentIndex, relevance := range documentsRelevance {
-			relevanceArray[arrIndex] = kv{documentIndex + 1, relevance}
-			arrIndex++
+			if relevance > 0 {
+				relevanceArray = append(relevanceArray, kv{documentIndex + 1, relevance})
+			}
 		}
 
 		sort.Slice(relevanceArray, func(i, j int) bool {
 			rel1 := relevanceArray[i]
 			rel2 := relevanceArray[j]
-			if rel1.Value > rel2.Value {
-				return true
-			} else if rel1.Value < rel2.Value {
-				return false
-			} else { // релевантности совпадают => сортируем по возрастанию порядкового номер документа
+			if rel1.Value == rel2.Value { // релевантности совпадают => сортируем по возрастанию порядкового номер документа
 				return rel1.Key < rel2.Key
+			} else {
+				return rel1.Value > rel2.Value
 			}
 		})
 
 		// выводим лучшие 5 документов
 		printArrayOfPairs(writer, relevanceArray)
-
-		// кешируем результат
-		resultForCaching := make([]int, len(relevanceArray))
-		for k := 0; k < len(relevanceArray); k++ {
-			resultForCaching[k] = relevanceArray[k].Key
-		}
-		searchCache.cacheElements[line] = newCacheElement(resultForCaching)
 	}
 
 	writer.Flush()
 }
 
+func getUniqueWords(words []string) []string {
+	uniqueWords := make(map[string]bool)
+	for j := 0; j < len(words); j++ {
+		uniqueWords[words[j]] = true
+	}
+	result := make([]string, len(uniqueWords))
+	index := 0
+	for word := range uniqueWords {
+		result[index] = word
+		index++
+	}
+	return result
+}
+
 type kv struct {
 	Key   int
 	Value int
-}
-
-// Для ускорения поиска кешируем результаты: для каждого запроса сохраняем топ-5 документов
-type SearchCache struct {
-	cacheElements map[string]CacheElement
-}
-
-func newSearchCache() SearchCache {
-	return SearchCache{make(map[string]CacheElement)}
-}
-
-type CacheElement struct {
-	topFiveDocuments []int
-}
-
-func newCacheElement(topFiveDocuments []int) CacheElement {
-	return CacheElement{topFiveDocuments}
-}
-
-func printArray(writer *bufio.Writer, array []int) {
-	if len(array) == 0 {
-		return
-	}
-	var k int
-	if len(array) >= 5 {
-		k = 5
-	} else {
-		k = len(array)
-	}
-	for i := 0; i < k-1; i++ {
-		writer.WriteString(strconv.Itoa(array[i]))
-		writer.WriteString(" ")
-	}
-	writer.WriteString(strconv.Itoa(array[k-1]))
-	writer.WriteString("\n")
 }
 
 func printArrayOfPairs(writer *bufio.Writer, array []kv) {
