@@ -1,13 +1,5 @@
 package main
 
-import (
-	"bufio"
-	"os"
-	"sort"
-	"strconv"
-	"strings"
-)
-
 /*
 https://contest.yandex.ru/contest/24414/run-report/53763938/
 
@@ -38,6 +30,15 @@ https://contest.yandex.ru/contest/24414/run-report/53763938/
 Мы сохраняем поисковый индекс размера O(w1 * f1). Дополнительно сохраняется кеш поисковых запросов, размер
 которого зависит от количества повторяющихся запросов
 */
+
+import (
+	"bufio"
+	"os"
+	"sort"
+	"strconv"
+	"strings"
+)
+
 func main() {
 	scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
 	scanner.Split(bufio.ScanLines)
@@ -140,8 +141,7 @@ func main() {
 		// кешируем результат
 		resultForCaching := make([]int, len(relevanceArray))
 		for k := 0; k < len(relevanceArray); k++ {
-			pair := relevanceArray[k]
-			resultForCaching[k] = pair.Key
+			resultForCaching[k] = relevanceArray[k].Key
 		}
 		searchCache.cacheElements[line] = newCacheElement(resultForCaching)
 	}

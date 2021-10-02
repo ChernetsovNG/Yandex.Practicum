@@ -1,120 +1,48 @@
 package main
 
+/*
+// https://contest.yandex.ru/contest/24414/run-report/53768518/
+
+-- ПРИНЦИП РАБОТЫ --
+Реализована хеш-таблица с разрешением коллизий методом цепочек. Таблица представляет собой массив бакетов, каждый
+из которых представляет собой связный список из элементов, имеющих одинаковый хеш. При добавлении элемента в таблицу
+вычисляет хеш от ключа, на основе которого определяется индекс бакета по формуле hash(key) mod m, где m - размер
+таблицы. Далее элемент добавляется в связный список данного бакета. Если список пустой, то элемент добавляется в голову
+списка, если непустой, то ищется элемент с таким же ключом. Если такой элемент найден, то его значение перезаписывается
+новым значением. Если такой элемент не найден, то в голову списка добавляется новый узел.
+
+-- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
+Вычисление хеш-кода от ключа занимает O(1), т.к. в нашем случае хеш-код от целого числа равен самому этому числу.
+Так что перед нами классическая хеш-таблица с амортизированным временем выполнения всех операций за O(1).
+
+-- ВРЕМЕННАЯ СЛОЖНОСТЬ --
+Все операции выполняются за амортизированное время O(1). Возможны специальные случаи, когда все добавляемые элементы
+имеют одинаковый хеш-код. Например, 1, 1+m, 1+2*m, ..., 1+n*m, где m - размер хеш-таблицы. Т.к. индекс бакета
+определяется путём взятия остатка от деления на m, то все элементы с такими ключами попадут в один бакет с индексом 1,
+в результате чего в нём образуется длинный список элементов. И в таком, худшем случае, время выполнения операций
+составит O(n). В случае же более-менее равномерного распределения элементов сложность будет составлять O(1).
+
+-- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
+Мы храним массив бакетов - указателей на соответствующие связные списки. При добавлении n элементов каждый из них
+попадёт в тот или иной бакет, и для него будет создан узел списка. Поэтому пространственная сложность составит O(n).
+*/
+
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
 )
 
-// Узел списка
-type ListNode struct {
-	key, value int
-	next       *ListNode
-}
-
-// Связный список
-type LinkedList struct {
-	head *ListNode
-}
-
-func newLinkedList() LinkedList {
-	return LinkedList{}
-}
-
-// добавление пары "ключ - значение" в связный список
-func (list *LinkedList) add(key, value int) {
-	node := ListNode{key, value, nil}
-	if list.head == nil { // новый список
-		list.head = &node
-	} else {
-		prevHead := list.head
-		list.head = &node
-		node.next = prevHead
-	}
-}
-
-// поиск в связном списке значения по ключу
-func (list *LinkedList) get(key int) (int, error) {
-	node := list.head
-	if node == nil {
-		return 0, errors.New("list is empty")
-	}
-	for true {
-		if node.key == key {
-			return node.value, nil
-		}
-		node = node.next
-		if node == nil { // дошли до конца списка
-			return 0, errors.New("key not found")
-		}
-		if node.next == nil { // дошли до конца списка
-			return 0, errors.New("key not found")
-		}
-	}
-	return 0, errors.New("key not found")
-}
-
-func (list *LinkedList) getNode(key int) *ListNode {
-	node := list.head
-	if node == nil {
-		return nil
-	}
-	for true {
-		if node.key == key {
-			return node
-		}
-		node = node.next
-		if node == nil { // дошли до конца списка
-			return nil
-		}
-		if node.next == nil { // дошли до конца списка
-			return nil
-		}
-	}
-	return nil
-}
-
-func (list *LinkedList) getNodeValueAndRemoveNode(key int) (int, error) {
-	node := list.head
-	if node == nil {
-		return 0, errors.New("key not found")
-	}
-	if node.key == key { // нужно удалить голову списка
-		value := list.head.value
-		list.head = node.next
-		return value, nil
-	} else {
-		for true {
-			if node.next == nil { // дошли до конца списка
-				return 0, errors.New("key not found")
-			} else if node.next.key == key { // нужно удалить следующий узел
-				value := node.next.value
-				node.next = node.next.next
-				return value, nil
-			}
-		}
-	}
-	return 0, errors.New("key not found")
-}
-
-type Bucket struct {
-	values *LinkedList
-}
-
-func newBucket() Bucket {
-	return Bucket{}
-}
-
+// Хеш-таблица
 type HashTable struct {
-	buckets []*Bucket
+	buckets []*List
 	m       int
 }
 
 func newHashTable(m int) HashTable {
-	return HashTable{make([]*Bucket, m), m}
+	return HashTable{make([]*List, m), m}
 }
 
 /*
@@ -122,13 +50,11 @@ func newHashTable(m int) HashTable {
 Иначе вывести найденное значение
 */
 func (table *HashTable) get(key int) (int, error) {
-	h := hash(key)
-	bucketNumber := h % table.m
-	bucket := table.buckets[bucketNumber]
+	bucket := table.buckets[hash(key)%table.m]
 	if bucket == nil {
 		return 0, errors.New("key not found")
 	}
-	return bucket.values.get(key)
+	return bucket.get(key)
 }
 
 /*
@@ -136,21 +62,11 @@ func (table *HashTable) get(key int) (int, error) {
 то соответствующее ему значение обновляется
 */
 func (table *HashTable) put(key, value int) {
-	bucketNumber := hash(key) % table.m
-	if table.buckets[bucketNumber] == nil {
-		linkedList := newLinkedList()
-		bucket := newBucket()
-		bucket.values = &linkedList
-		table.buckets[bucketNumber] = &bucket
+	bucketIndex := hash(key) % table.m
+	if table.buckets[bucketIndex] == nil {
+		table.buckets[bucketIndex] = &List{nil}
 	}
-	// перед добавлением проверим, не было ли уже в списке такой пары "ключ-значение"
-	bucket := table.buckets[bucketNumber]
-	node := bucket.values.getNode(key)
-	if node == nil { // нет узла с таким ключом
-		bucket.values.add(key, value)
-	} else {
-		node.value = value // по ключу уже было значение => обновляем его
-	}
+	table.buckets[bucketIndex].put(key, value)
 }
 
 /*
@@ -158,11 +74,11 @@ func (table *HashTable) put(key, value int) {
 по данному ключу значение и удалить ключ.
 */
 func (table *HashTable) delete(key int) (int, error) {
-	bucket := table.buckets[hash(key) % table.m]
+	bucket := table.buckets[hash(key)%table.m]
 	if bucket == nil {
 		return 0, errors.New("key not found")
 	}
-	return bucket.values.getNodeValueAndRemoveNode(key)
+	return bucket.delete(key)
 }
 
 // простой хеш-код для целого числа, когда код равен самому числу
@@ -173,6 +89,7 @@ func hash(key int) int {
 func main() {
 	scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
 	scanner.Split(bufio.ScanLines)
+	writer := bufio.NewWriter(os.Stdout)
 
 	var line string
 
@@ -184,11 +101,10 @@ func main() {
 	n, _ = strconv.Atoi(line)
 
 	// создаём новую хеш таблицу
-	table := newHashTable(10_000)
+	table := newHashTable(1_000)
 
 	// читаем и обрабатываем запросы
 	// читаем и выполняем команды
-	var results []string
 	for i := 0; i < n; i++ {
 		scanner.Scan()
 		line = scanner.Text()
@@ -198,9 +114,10 @@ func main() {
 			key, _ := strconv.Atoi(split[1])
 			value, err := table.get(key)
 			if err != nil {
-				results = append(results, "None")
+				writer.WriteString("None\n")
 			} else {
-				results = append(results, strconv.Itoa(value))
+				writer.WriteString(strconv.Itoa(value))
+				writer.WriteString("\n")
 			}
 		} else if strings.Contains(line, "put") {
 			split := strings.Split(line, " ")
@@ -212,14 +129,85 @@ func main() {
 			key, _ := strconv.Atoi(split[1])
 			value, err := table.delete(key)
 			if err != nil {
-				results = append(results, "None")
+				writer.WriteString("None\n")
 			} else {
-				results = append(results, strconv.Itoa(value))
+				writer.WriteString(strconv.Itoa(value))
+				writer.WriteString("\n")
 			}
 		}
 	}
+	writer.Flush()
+}
 
-	for i := 0; i < len(results); i++ {
-		fmt.Println(results[i])
+// Бакеты для хеш-таблицы на основе связных списков
+type Node struct {
+	key, value int
+	next       *Node
+}
+
+type List struct {
+	head *Node
+}
+
+func (list *List) put(key int, value int) {
+	if list.head == nil {
+		list.head = &Node{key, value, nil}
+	} else {
+		node := list.head
+		for true {
+			if node == nil {
+				break
+			}
+			if node.key == key {
+				node.value = value // обновляем значение в узле
+				return
+			}
+			node = node.next
+		}
+		// если ничего не нашли, то добавляем новый элемент в голову списка
+		node = &Node{key, value, nil}
+		node.next = list.head
+		list.head = node
 	}
+}
+
+func (list *List) get(key int) (int, error) {
+	if list.head == nil {
+		return 0, errors.New("key not found")
+	}
+	node := list.head
+	for true {
+		if node == nil {
+			return 0, errors.New("key not found")
+		}
+		if node.key == key {
+			return node.value, nil
+		}
+		node = node.next
+	}
+	return 0, errors.New("key not found")
+}
+
+func (list *List) delete(key int) (int, error) {
+	if list.head == nil {
+		return 0, errors.New("key not found")
+	}
+	var prevNode *Node = nil
+	node := list.head
+	for true {
+		if node == nil {
+			return 0, errors.New("key not found")
+		}
+		if node.key == key {
+			if prevNode == nil { // удаляем голову списка
+				list.head = node.next
+			} else {
+				prevNode.next = node.next
+			}
+			return node.value, nil
+		}
+		prevNode = node
+		node = node.next
+	}
+	return 0, errors.New("key not found")
 }
