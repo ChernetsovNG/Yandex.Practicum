@@ -49,10 +49,9 @@ func test() {
 	node2 := Node{-5, nil, nil}
 	node3 := Node{3, &node1, &node2}
 	node4 := Node{2, &node3, nil}
-	solution := Solution(&node4)
-	if solution != 3 {
-		panic("WA")
-	} else {
-		fmt.Print(solution)
-	}
+	fmt.Print(Solution(&node4))
+}
+
+func main() {
+	test()
 }
