@@ -2,11 +2,11 @@ package main
 
 import "fmt"
 
-/*type Node struct {
+type Node struct {
 	value int
 	left  *Node
 	right *Node
-}*/
+}
 
 func getElementsInRange(root *Node, left int, right int, array *[]int) {
 	if root == nil {
@@ -36,7 +36,9 @@ func printRange(root *Node, left int, right int) {
 }
 
 func test() {
-	node1 := Node{2, nil, nil}
+	node11 := Node{2, nil, nil}
+	node12 := Node{2, nil, nil}
+	node1 := Node{2, &node11, &node12}
 	node2 := Node{1, nil, &node1}
 	node3 := Node{8, nil, nil}
 	node4 := Node{8, nil, &node3}
@@ -45,4 +47,8 @@ func test() {
 	node7 := Node{5, &node2, &node6}
 	printRange(&node7, 2, 8)
 	// expected output: 2 5 8 8
+}
+
+func main() {
+	test()
 }
