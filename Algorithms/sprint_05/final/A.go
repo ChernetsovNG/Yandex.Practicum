@@ -161,17 +161,14 @@ func heapsort(a []participant) []participant {
 		heap.heapAdd(participant)
 	}
 
-	sortedArray := make([]participant, len(a))
+	sortedArray := make([]participant, 0, len(a))
 
 	// Будем извлекать из пирамиды наиболее приоритетные элементы
-	i := 0
-	for true {
+	for {
 		if heap.size == 0 {
 			break
 		}
-		maxParticipant := heap.popMax()
-		sortedArray[i] = maxParticipant
-		i += 1
+		sortedArray = append(sortedArray, heap.popMax())
 	}
 
 	return sortedArray

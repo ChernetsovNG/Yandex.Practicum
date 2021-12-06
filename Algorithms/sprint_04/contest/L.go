@@ -112,7 +112,7 @@ func powerByModule(b, e, m int) int {
 	if 1&e == 1 {
 		result = b
 	}
-	for true {
+	for {
 		if e == 0 {
 			break
 		}

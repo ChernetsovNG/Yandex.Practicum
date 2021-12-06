@@ -40,7 +40,7 @@ func main() {
 	right := n - 1
 
 	var distLeft, distRight int
-	for true {
+	for {
 		if left >= n && right < 0 {
 			break
 		}

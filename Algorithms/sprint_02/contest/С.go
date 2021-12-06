@@ -1,7 +1,7 @@
 package main
 
 /*func getNodeByIndex(node *ListNode, index int) *ListNode {
-	for true {
+	for {
 		if index <= 0 {
 			break
 		}

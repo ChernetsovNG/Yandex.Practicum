@@ -62,7 +62,7 @@ func main() {
 	i, j := 0, 0
 	var greedy, size int
 	result := 0
-	for true {
+	for {
 		if i >= n || j >= m {
 			break
 		}

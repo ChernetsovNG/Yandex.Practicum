@@ -4,7 +4,7 @@ package main
 	var temp *ListNode = nil
 	current := head
 
-	for true {
+	for {
 		if current == nil {
 			break
 		}

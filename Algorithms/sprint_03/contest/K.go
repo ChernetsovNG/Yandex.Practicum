@@ -32,7 +32,7 @@ func merge(arr []int, left int, mid int, right int) (result []int) {
 
 	result = make([]int, right-left)
 	l, r, k := 0, 0, 0
-	for true {
+	for {
 		if l >= len(leftArray) || r >= len(rightArray) {
 			break
 		}
@@ -46,7 +46,7 @@ func merge(arr []int, left int, mid int, right int) (result []int) {
 		k += 1
 	}
 
-	for true {
+	for {
 		if l >= len(leftArray) {
 			break
 		}
@@ -55,7 +55,7 @@ func merge(arr []int, left int, mid int, right int) (result []int) {
 		k += 1
 	}
 
-	for true {
+	for {
 		if r >= len(rightArray) {
 			break
 		}

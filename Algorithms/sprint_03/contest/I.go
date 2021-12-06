@@ -24,7 +24,7 @@ func mergeSort(array []kv) []kv {
 	result := make([]kv, len(array))
 
 	l, r, k := 0, 0, 0
-	for true {
+	for {
 		if l >= len(left) || r >= len(right) {
 			break
 		}
@@ -38,7 +38,7 @@ func mergeSort(array []kv) []kv {
 		k += 1
 	}
 
-	for true {
+	for {
 		if l >= len(left) {
 			break
 		}
@@ -47,7 +47,7 @@ func mergeSort(array []kv) []kv {
 		k += 1
 	}
 
-	for true {
+	for {
 		if r >= len(right) {
 			break
 		}

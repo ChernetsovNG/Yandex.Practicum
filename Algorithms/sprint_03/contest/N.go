@@ -51,7 +51,7 @@ func mergeSort(array []interval) []interval {
 
 	l, r := 0, 0
 
-	for true {
+	for {
 		if l >= len(left) || r >= len(right) {
 			break
 		}
@@ -69,7 +69,7 @@ func mergeSort(array []interval) []interval {
 		}
 	}
 
-	for true {
+	for {
 		if l >= len(left) {
 			break
 		}
@@ -77,7 +77,7 @@ func mergeSort(array []interval) []interval {
 		l += 1
 	}
 
-	for true {
+	for {
 		if r >= len(right) {
 			break
 		}

@@ -37,7 +37,7 @@ func main() {
 	}
 
 	i, j := 0, 0
-	for true {
+	for {
 		if i == lenS && j <= lenT {
 			result = true
 			break

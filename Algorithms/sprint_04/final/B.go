@@ -154,7 +154,7 @@ func (list *List) put(key int, value int) {
 		list.head = &Node{key, value, nil}
 	} else {
 		node := list.head
-		for true {
+		for {
 			if node == nil {
 				break
 			}
@@ -176,7 +176,7 @@ func (list *List) get(key int) (int, error) {
 		return 0, errors.New("key not found")
 	}
 	node := list.head
-	for true {
+	for {
 		if node == nil {
 			return 0, errors.New("key not found")
 		}
@@ -194,7 +194,7 @@ func (list *List) delete(key int) (int, error) {
 	}
 	var prevNode *Node = nil
 	node := list.head
-	for true {
+	for {
 		if node == nil {
 			return 0, errors.New("key not found")
 		}

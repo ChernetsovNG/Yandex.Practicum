@@ -12,7 +12,7 @@ func mergeSort(left, right []int) []int {
 	result := make([]int, len(left)+len(right))
 
 	l, r, k := 0, 0, 0
-	for true {
+	for {
 		if l >= len(left) || r >= len(right) {
 			break
 		}
@@ -26,7 +26,7 @@ func mergeSort(left, right []int) []int {
 		k += 1
 	}
 
-	for true {
+	for {
 		if l >= len(left) {
 			break
 		}
@@ -35,7 +35,7 @@ func mergeSort(left, right []int) []int {
 		k += 1
 	}
 
-	for true {
+	for {
 		if r >= len(right) {
 			break
 		}

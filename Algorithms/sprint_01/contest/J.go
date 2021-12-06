@@ -23,7 +23,7 @@ func main() {
 	var factors []string
 
 	divisor := 2
-	for true {
+	for {
 		if divisor*divisor > n {
 			break
 		}

@@ -25,7 +25,7 @@ func main() {
 
 	var result []string
 
-	for true {
+	for {
 		if n <= 0 {
 			break
 		}

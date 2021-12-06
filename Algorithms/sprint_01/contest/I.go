@@ -35,7 +35,7 @@ func main() {
 	}
 
 	var rem int
-	for true {
+	for {
 		rem = n % 4
 		n /= 4
 		if n == 4 && rem == 0 {

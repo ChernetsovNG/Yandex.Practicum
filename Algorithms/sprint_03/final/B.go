@@ -96,9 +96,9 @@ func partition(a []participant, lo, hi int) int {
 	v := a[lo] // опорный элемент (произвольно выбираем первый элемент)
 
 	var compareResult int
-	for true {
+	for {
 		// просматриваем элементы с левого конца, пока не найдём элемент, который больше или равен опорного
-		for true {
+		for {
 			i += 1
 			compareResult = cmp(a[i], v)
 			if compareResult == 0 || compareResult == 1 {
@@ -110,7 +110,7 @@ func partition(a []participant, lo, hi int) int {
 		}
 
 		// просматриваем элементы с правого конца, пока не найдём элементы, который меньше или равен опорного
-		for true {
+		for {
 			j -= 1
 			compareResult = cmp(v, a[j])
 			if compareResult == 0 || compareResult == 1 {
