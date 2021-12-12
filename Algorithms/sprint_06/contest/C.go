@@ -83,7 +83,7 @@ func main() {
 		}
 	}
 
-	// сортируем списки смежности вершин в порядке возрастания
+	// сортируем списки смежности вершин в порядке убывания
 	for _, adjacencyList := range adjacencyListMap {
 		sort.Sort(sort.Reverse(sort.IntSlice(adjacencyList)))
 	}
