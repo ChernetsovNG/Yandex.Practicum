@@ -122,9 +122,10 @@ func main() {
 	}
 
 	// выводим вершины в порядке топологической сортировки
-	size := topologySortStack.size()
-	for i := 0; i < size-1; i++ {
-		fmt.Printf("%d ", topologySortStack.pop())
+	arrayToPrint := topologySortStack.array
+
+	for i := len(arrayToPrint) - 1; i > 0; i-- {
+		fmt.Printf("%d ", arrayToPrint[i])
 	}
-	fmt.Printf("%d", topologySortStack.pop())
+	fmt.Printf("%d", arrayToPrint[0])
 }
