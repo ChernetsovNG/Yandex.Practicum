@@ -1,7 +1,12 @@
 package main
 
+/*
+https://contest.yandex.ru/contest/25070/run-report/62202446/
+*/
+
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strconv"
 )
@@ -57,43 +62,53 @@ func main() {
 		color[i] = 1
 	}
 
-	// выполняем обход вершин
-	stack := newStack()
+	// выполняем обход графа в глубину в поисках цикла
+	hasCycle := false
 
-	stack.push(1)
+	// пока остались не посещённые вершины
+	dfsStack := newStack()
+out:
+	for i := 1; i <= n; i++ {
+		if color[i] == 1 { // white
+			dfsStack.push(i) // начинаем обход очередной компоненты связности
+			for {
+				if dfsStack.isEmpty() {
+					break
+				}
+				// пока стек не пуст
+				// получаем из стека очередную вершину
+				v := dfsStack.pop()
 
-	// массив вершин в порядке обхода
-	var result []int
+				if color[v] == 1 { // color[v] == white
+					// красим вершину в серый и кладём её обратно в стек
+					color[v] = 2
+					dfsStack.push(v)
 
-	for true {
-		if stack.isEmpty() {
-			break
-		}
-		// пока стек не пуст
-		// получаем из стека очередную вершину
-		v := stack.pop()
-
-		if color[v] == 1 { // color[v] == white
-			result = append(result, v)
-
-			// красим вершину в серый и кладём её обратно в стек
-			color[v] = 2
-			stack.push(v)
-
-			// добавляем в стек все не посещённые соседние вершины
-			adjacencyList, contains := adjacencyListMap[v]
-			if contains {
-				// для каждого исходящего из v ребра
-				for _, w := range adjacencyList {
-					if color[w] == 1 { // white
-						stack.push(w)
+					// добавляем в стек все не посещённые соседние вершины
+					adjacencyList, contains := adjacencyListMap[v]
+					if contains {
+						// для каждого исходящего из v ребра
+						for _, w := range adjacencyList {
+							if color[w] == 1 { // white
+								dfsStack.push(w)
+							} else if color[w] == 2 { // grey => обнаружили цикл
+								hasCycle = true
+								break out
+							}
+						}
 					}
+				} else if color[v] == 2 { // gray
+					// серую вершину мы могли получить из стека только на обратном пути => красим её в чёрный
+					color[v] = 3
 				}
 			}
-		} else if color[v] == 2 { // gray
-			// серую вершину мы могли получить из стека только на обратном пути => красим её в чёрный
-			color[v] = 3
 		}
+	}
+
+	if hasCycle {
+		fmt.Print("NO")
+	} else {
+		fmt.Print("YES")
 	}
 }
 
