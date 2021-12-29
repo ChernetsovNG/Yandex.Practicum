@@ -73,19 +73,8 @@ func main() {
 		u, _ := strconv.Atoi(uv[0])
 		v, _ := strconv.Atoi(uv[1])
 
-		adjacencyList, contains := adjacencyListMap[u]
-		if !contains {
-			adjacencyListMap[u] = []int{v}
-		} else {
-			adjacencyListMap[u] = append(adjacencyList, v)
-		}
-
-		adjacencyList, contains = adjacencyListMap[v]
-		if !contains {
-			adjacencyListMap[v] = []int{u}
-		} else {
-			adjacencyListMap[v] = append(adjacencyList, u)
-		}
+		adjacencyListMap[u] = append(adjacencyListMap[u], v)
+		adjacencyListMap[v] = append(adjacencyListMap[v], u)
 	}
 
 	// цвета вершин: 1 - white, 2 - gray
@@ -118,26 +107,18 @@ func main() {
 					dfsStack.push(v)
 
 					// добавляем в стек все не посещённые соседние вершины
-					adjacencyList, contains := adjacencyListMap[v]
-					if contains {
-						// для каждого исходящего из v ребра
-						for _, w := range adjacencyList {
-							if color[w] == 1 { // white
-								dfsStack.push(w)
-							}
+					adjacencyList, _ := adjacencyListMap[v]
+					// для каждого исходящего из v ребра
+					for _, w := range adjacencyList {
+						if color[w] == 1 { // white
+							dfsStack.push(w)
 						}
 					}
 				} else if color[v] == 2 { // gray
 					// серую вершину мы могли получить из стека только на обратном пути => красим её в цвет
 					// компоненты связности
 					color[v] = componentColor
-
-					connectivityComponent, contains := connectivityComponentsMap[componentColor]
-					if !contains {
-						connectivityComponentsMap[componentColor] = []int{v}
-					} else {
-						connectivityComponentsMap[componentColor] = append(connectivityComponent, v)
-					}
+					connectivityComponentsMap[componentColor] = append(connectivityComponentsMap[componentColor], v)
 				}
 			}
 		}

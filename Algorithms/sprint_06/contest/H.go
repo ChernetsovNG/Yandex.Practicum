@@ -68,12 +68,7 @@ func main() {
 		u, _ := strconv.Atoi(uv[0])
 		v, _ := strconv.Atoi(uv[1])
 
-		adjacencyList, contains := adjacencyListMap[u]
-		if !contains {
-			adjacencyListMap[u] = []int{v}
-		} else {
-			adjacencyListMap[u] = append(adjacencyList, v)
-		}
+		adjacencyListMap[u] = append(adjacencyListMap[u], v)
 	}
 
 	// сортируем списки смежности вершин в порядке возрастания
@@ -118,13 +113,11 @@ func main() {
 			stack.push(v)
 
 			// добавляем в стек все не посещённые соседние вершины
-			adjacencyList, contains := adjacencyListMap[v]
-			if contains {
-				// для каждого исходящего из v ребра
-				for _, w := range adjacencyList {
-					if color[w] == 1 { // white
-						stack.push(w)
-					}
+			adjacencyList, _ := adjacencyListMap[v]
+			// для каждого исходящего из v ребра
+			for _, w := range adjacencyList {
+				if color[w] == 1 { // white
+					stack.push(w)
 				}
 			}
 		} else if color[v] == 2 { // gray

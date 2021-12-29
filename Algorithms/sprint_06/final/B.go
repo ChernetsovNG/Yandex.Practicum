@@ -1,7 +1,7 @@
 package main
 
 /*
-https://contest.yandex.ru/contest/25070/run-report/62202446/
+https://contest.yandex.ru/contest/25070/run-report/63195056/
 
 -- ПРИНЦИП РАБОТЫ --
 Рассмотрим города и связывающие их железные дороги как направленный граф. По условию задачи карта железных дорог
@@ -35,7 +35,7 @@ import (
 )
 
 func main() {
-	scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
+	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Split(bufio.ScanLines)
 
 	var line string
@@ -62,19 +62,9 @@ func main() {
 		for j := 1; j <= n-i; j++ {
 			roadType := symbols[j-1] // R или B
 			if roadType == 'R' {     // ребро направлено "вперёд", из i в i+j
-				adjacencyList, contains := adjacencyListMap[i]
-				if !contains {
-					adjacencyListMap[i] = []int{i + j}
-				} else {
-					adjacencyListMap[i] = append(adjacencyList, i+j)
-				}
+				adjacencyListMap[i] = append(adjacencyListMap[i], i+j)
 			} else if roadType == 'B' { // ребро направлено "назад", из i+j в i
-				adjacencyList, contains := adjacencyListMap[i+j]
-				if !contains {
-					adjacencyListMap[i+j] = []int{i}
-				} else {
-					adjacencyListMap[i+j] = append(adjacencyList, i)
-				}
+				adjacencyListMap[i+j] = append(adjacencyListMap[i+j], i)
 			}
 		}
 	}

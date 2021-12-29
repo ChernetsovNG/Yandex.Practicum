@@ -82,19 +82,8 @@ func main() {
 		u, _ := strconv.Atoi(uv[0])
 		v, _ := strconv.Atoi(uv[1])
 
-		adjacencyList, contains := adjacencyListMap[u]
-		if !contains {
-			adjacencyListMap[u] = []int{v}
-		} else {
-			adjacencyListMap[u] = append(adjacencyList, v)
-		}
-
-		adjacencyList, contains = adjacencyListMap[v]
-		if !contains {
-			adjacencyListMap[v] = []int{u}
-		} else {
-			adjacencyListMap[v] = append(adjacencyList, u)
-		}
+		adjacencyListMap[u] = append(adjacencyListMap[u], v)
+		adjacencyListMap[v] = append(adjacencyListMap[v], u)
 	}
 
 	color := make([]int, n+1)
@@ -121,19 +110,17 @@ out:
 					break
 				}
 				u, _ := queue.pop()
-				adjacencyList, contains := adjacencyListMap[u]
-				if contains {
-					for _, v := range adjacencyList {
-						// находим все неокрашенные смежные вершины
-						if color[v] == -1 {
-							// присваиваем вершине противоположный цвет (0 => 1, 1 => 0)
-							color[v] = 1 - color[u]
-							queue.push(v)
-						} else if color[v] == color[u] {
-							// иначе если вершины окрашены в один и тот же цвет, то граф не двудольный
-							isBipartite = false
-							break out
-						}
+				adjacencyList, _ := adjacencyListMap[u]
+				for _, v := range adjacencyList {
+					// находим все неокрашенные смежные вершины
+					if color[v] == -1 {
+						// присваиваем вершине противоположный цвет (0 => 1, 1 => 0)
+						color[v] = 1 - color[u]
+						queue.push(v)
+					} else if color[v] == color[u] {
+						// иначе если вершины окрашены в один и тот же цвет, то граф не двудольный
+						isBipartite = false
+						break out
 					}
 				}
 			}

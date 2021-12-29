@@ -1,7 +1,7 @@
 package main
 
 /*
-https://contest.yandex.ru/contest/25070/run-report/61890495/
+https://contest.yandex.ru/contest/25070/run-report/63194879/
 
 -- ПРИНЦИП РАБОТЫ --
 Мы используем алгоритм Прима поиска остовного дерева с максимальным весом рёбер.
@@ -42,7 +42,7 @@ import (
 )
 
 func main() {
-	scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
+	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Split(bufio.ScanLines)
 
 	var line string
@@ -71,19 +71,8 @@ func main() {
 		v, _ := strconv.Atoi(uvw[1])
 		w, _ := strconv.Atoi(uvw[2])
 
-		adjacencyList, contains := adjacencyListMap[u]
-		if !contains {
-			adjacencyListMap[u] = []Edge{newEdge(v, w)}
-		} else {
-			adjacencyListMap[u] = append(adjacencyList, newEdge(v, w))
-		}
-
-		adjacencyList, contains = adjacencyListMap[v]
-		if !contains {
-			adjacencyListMap[v] = []Edge{newEdge(u, w)}
-		} else {
-			adjacencyListMap[v] = append(adjacencyList, newEdge(u, w))
-		}
+		adjacencyListMap[u] = append(adjacencyListMap[u], newEdge(v, w))
+		adjacencyListMap[v] = append(adjacencyListMap[v], newEdge(u, w))
 	}
 
 	// находим максимальное остовное дерево (точнее, сумму весов составляющих его рёбер)
@@ -106,7 +95,7 @@ func main() {
 	// берём первую попавшуюся вершину (допустим, первую) и добавляем её в остовное дерево
 	v := 1
 
-	addVertex(v, &adjacencyListMap, added, notAdded, &edges)
+	addVertex(v, adjacencyListMap, added, notAdded, &edges)
 
 	// пока notAdded не пуст и edges не пуст
 	for {
@@ -118,7 +107,7 @@ func main() {
 
 		if notAdded.Exists(maxEdge.to) {
 			maximumSpanningTree = append(maximumSpanningTree, maxEdge)
-			addVertex(maxEdge.to, &adjacencyListMap, added, notAdded, &edges)
+			addVertex(maxEdge.to, adjacencyListMap, added, notAdded, &edges)
 		}
 	}
 
@@ -134,18 +123,16 @@ func main() {
 	}
 }
 
-func addVertex(v int, graph *map[int][]Edge, added *Set, notAdded *Set, edges *MaxHeap) {
+func addVertex(v int, graph map[int][]Edge, added *Set, notAdded *Set, edges *MaxHeap) {
 	added.Add(v)
 	notAdded.Remove(v)
 
 	// Добавляем все рёбра, которые инцидентны v, но их конец ещё не в остовном дереве
-	adjacencyList, contains := (*graph)[v]
-	if contains {
-		for _, e := range adjacencyList {
-			to := e.to
-			if notAdded.Exists(to) {
-				(*edges).heapAdd(newEdge(to, e.weight))
-			}
+	adjacencyList, _ := graph[v]
+	for _, e := range adjacencyList {
+		to := e.to
+		if notAdded.Exists(to) {
+			(*edges).heapAdd(newEdge(to, e.weight))
 		}
 	}
 }

@@ -67,12 +67,7 @@ func main() {
 		u, _ := strconv.Atoi(uv[0])
 		v, _ := strconv.Atoi(uv[1])
 
-		adjacencyList, contains := adjacencyListMap[u]
-		if !contains {
-			adjacencyListMap[u] = []int{v}
-		} else {
-			adjacencyListMap[u] = append(adjacencyList, v)
-		}
+		adjacencyListMap[u] = append(adjacencyListMap[u], v)
 	}
 
 	// цвета вершин: 1 - white, 2 - gray, 3 - black
@@ -102,13 +97,11 @@ func main() {
 					dfsStack.push(v)
 
 					// добавляем в стек все не посещённые соседние вершины
-					adjacencyList, contains := adjacencyListMap[v]
-					if contains {
-						// для каждого исходящего из v ребра
-						for _, w := range adjacencyList {
-							if color[w] == 1 { // white
-								dfsStack.push(w)
-							}
+					adjacencyList, _ := adjacencyListMap[v]
+					// для каждого исходящего из v ребра
+					for _, w := range adjacencyList {
+						if color[w] == 1 { // white
+							dfsStack.push(w)
 						}
 					}
 				} else if color[v] == 2 { // gray

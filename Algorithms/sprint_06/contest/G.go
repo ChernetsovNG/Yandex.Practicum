@@ -82,19 +82,8 @@ func main() {
 		u, _ := strconv.Atoi(uv[0])
 		v, _ := strconv.Atoi(uv[1])
 
-		adjacencyList, contains := adjacencyListMap[u]
-		if !contains {
-			adjacencyListMap[u] = []int{v}
-		} else {
-			adjacencyListMap[u] = append(adjacencyList, v)
-		}
-
-		adjacencyList, contains = adjacencyListMap[v]
-		if !contains {
-			adjacencyListMap[v] = []int{u}
-		} else {
-			adjacencyListMap[v] = append(adjacencyList, u)
-		}
+		adjacencyListMap[u] = append(adjacencyListMap[u], v)
+		adjacencyListMap[v] = append(adjacencyListMap[v], u)
 	}
 
 	// читаем информацию о стартовой вершине
@@ -125,18 +114,16 @@ func main() {
 		// пока очередь не пуста
 		u, _ := planned.pop() // возьмём вершину из очереди
 
-		adjacencyList, contains := adjacencyListMap[u]
+		adjacencyList, _ := adjacencyListMap[u]
 		// для каждого ребра (u,v), исходящего из u
-		if contains {
-			// возьмём вершину v
-			for _, v := range adjacencyList {
-				if color[v] == 1 { // white
-					// серые и чёрные вершину уже либо в очереди, либо обработаны
-					distance[v] = distance[u] + 1
-					previous[v] = u
-					color[v] = 2    // grey
-					planned.push(v) // запланируем посещение вершины
-				}
+		// возьмём вершину v
+		for _, v := range adjacencyList {
+			if color[v] == 1 { // white
+				// серые и чёрные вершину уже либо в очереди, либо обработаны
+				distance[v] = distance[u] + 1
+				previous[v] = u
+				color[v] = 2    // grey
+				planned.push(v) // запланируем посещение вершины
 			}
 		}
 		color[u] = 3 // black, теперь вершина считается обработанной

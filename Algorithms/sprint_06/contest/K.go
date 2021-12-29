@@ -50,19 +50,8 @@ func main() {
 		v, _ := strconv.Atoi(uvl[1])
 		l, _ := strconv.Atoi(uvl[2])
 
-		adjacencyList, contains := adjacencyListMap[u]
-		if !contains {
-			adjacencyListMap[u] = []Pair{newPair(v, l)}
-		} else {
-			adjacencyListMap[u] = append(adjacencyList, newPair(v, l))
-		}
-
-		adjacencyList, contains = adjacencyListMap[v]
-		if !contains {
-			adjacencyListMap[v] = []Pair{newPair(u, l)}
-		} else {
-			adjacencyListMap[v] = append(adjacencyList, newPair(u, l))
-		}
+		adjacencyListMap[u] = append(adjacencyListMap[u], newPair(v, l))
+		adjacencyListMap[v] = append(adjacencyListMap[v], newPair(u, l))
 	}
 
 	// для каждой вершины запустим алгоритм Дейкстры, который найдёт кратчайшие расстояния
@@ -124,18 +113,15 @@ func Dijkstra(n int, graph map[int][]Pair, s int) []int {
 		visited[u] = true
 		// из множества рёбер графа выбираем те, которые исходят из u
 
-		adjacencyList, contains := graph[u]
-
-		if contains {
-			// для каждого ребра (u, v) среди рёбер к соседним вершинам
-			for _, neighbor := range adjacencyList {
-				// проверяем, не получился ли путь короче найденного ранее
-				v := neighbor.to
-				weight := neighbor.dist
-				if dist[v] > dist[u]+weight {
-					dist[v] = dist[u] + weight
-					previous[v] = u
-				}
+		adjacencyList, _ := graph[u]
+		// для каждого ребра (u, v) среди рёбер к соседним вершинам
+		for _, neighbor := range adjacencyList {
+			// проверяем, не получился ли путь короче найденного ранее
+			v := neighbor.to
+			weight := neighbor.dist
+			if dist[v] > dist[u]+weight {
+				dist[v] = dist[u] + weight
+				previous[v] = u
 			}
 		}
 	}

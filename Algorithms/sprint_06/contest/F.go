@@ -40,19 +40,8 @@ func main() {
 		u, _ := strconv.Atoi(uv[0])
 		v, _ := strconv.Atoi(uv[1])
 
-		adjacencyList, contains := adjacencyListMap[u]
-		if !contains {
-			adjacencyListMap[u] = []int{v}
-		} else {
-			adjacencyListMap[u] = append(adjacencyList, v)
-		}
-
-		adjacencyList, contains = adjacencyListMap[v]
-		if !contains {
-			adjacencyListMap[v] = []int{u}
-		} else {
-			adjacencyListMap[v] = append(adjacencyList, u)
-		}
+		adjacencyListMap[u] = append(adjacencyListMap[u], v)
+		adjacencyListMap[v] = append(adjacencyListMap[v], u)
 	}
 
 	// читаем номер стартовой вершины s и конечной вершины t
@@ -124,14 +113,12 @@ func Dijkstra(n int, graph map[int][]int, s, t int) int {
 		}
 
 		// из множества рёбер графа выбираем те, которые исходят из u
-		adjacencyList, contains := graph[u]
-		if contains {
-			// для каждого ребра (u, v) среди рёбер к соседним вершинам
-			for _, v := range adjacencyList {
-				// проверяем, не получился ли путь короче найденного ранее
-				if dist[v] > dist[u]+1 {
-					dist[v] = dist[u] + 1
-				}
+		adjacencyList, _ := graph[u]
+		// для каждого ребра (u, v) среди рёбер к соседним вершинам
+		for _, v := range adjacencyList {
+			// проверяем, не получился ли путь короче найденного ранее
+			if dist[v] > dist[u]+1 {
+				dist[v] = dist[u] + 1
 			}
 		}
 	}
