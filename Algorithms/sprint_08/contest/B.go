@@ -27,8 +27,6 @@ func main() {
 	passportSymbols := []rune(passportName)
 	databaseSymbols := []rune(databaseName)
 
-	deltasCount := 0
-
 	for i := 0; i < len(passportSymbols); i++ {
 		passportSymbol := passportSymbols[i]
 		databaseSymbol := databaseSymbols[i]
