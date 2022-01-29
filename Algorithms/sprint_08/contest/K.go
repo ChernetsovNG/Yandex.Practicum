@@ -48,16 +48,3 @@ func filter(s string) string {
 func position(r rune) int {
 	return int(r) - 96
 }
-
-/*
-функция compare(first, second):
-    если длина(first) ≠ длина(second):
-        вернуть False
-
-    length = длина(first)
-    для i от 0 до (length - 1):
-        если first[i] ≠ second[i]:
-            вернуть False
-
-    вернуть True
-*/
