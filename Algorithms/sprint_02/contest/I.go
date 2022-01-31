@@ -55,7 +55,6 @@ func (queue *QueueSized) isEmpty() bool {
 
 func main() {
 	scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
-	scanner.Split(bufio.ScanLines)
 
 	var line string
 

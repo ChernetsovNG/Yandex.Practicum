@@ -56,7 +56,6 @@ func floorDiv(x, y int) int {
 
 func main() {
 	scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
-	scanner.Split(bufio.ScanLines)
 
 	scanner.Scan()
 	line := scanner.Text()

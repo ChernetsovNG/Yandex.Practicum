@@ -13,7 +13,6 @@ const INF = math.MaxInt32
 
 func main() {
 	scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
-	scanner.Split(bufio.ScanLines)
 
 	var line string
 

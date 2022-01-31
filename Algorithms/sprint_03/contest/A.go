@@ -22,7 +22,6 @@ func correctBracketsSequence(n, openCount, closeCount int, result string) {
 
 func main() {
 	scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
-	scanner.Split(bufio.ScanLines)
 
 	scanner.Scan()
 	n, _ := strconv.Atoi(scanner.Text())

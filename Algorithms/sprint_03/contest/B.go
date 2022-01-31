@@ -51,7 +51,6 @@ func generate(input []rune, n int, index int, prefix string, result *[]string) {
 
 func main() {
 	scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
-	scanner.Split(bufio.ScanLines)
 
 	// читаем входную строку из цифр 2-9
 	scanner.Scan()

@@ -28,7 +28,6 @@ func (stack *Stack) size() int {
 
 func main() {
 	scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
-	scanner.Split(bufio.ScanLines)
 
 	scanner.Scan()
 	line := scanner.Text()

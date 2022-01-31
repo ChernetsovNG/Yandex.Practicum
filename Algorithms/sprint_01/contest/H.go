@@ -12,7 +12,6 @@ func main() {
 	const maxCapacity = 4 * 10_000
 	buffer := make([]byte, maxCapacity)
 	scanner.Buffer(buffer, maxCapacity)
-	scanner.Split(bufio.ScanLines)
 
 	// читаем два числа
 	scanner.Scan()

@@ -11,7 +11,6 @@ func main() {
 	const maxCapacity = 32 * 10_000
 	buffer := make([]byte, maxCapacity)
 	scanner.Buffer(buffer, maxCapacity)
-	scanner.Split(bufio.ScanLines)
 
 	// читаем строку
 	var s string

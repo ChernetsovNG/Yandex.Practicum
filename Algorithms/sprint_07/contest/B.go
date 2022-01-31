@@ -68,7 +68,6 @@ func newClass(start, finish string) Class {
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Split(bufio.ScanLines)
 
 	var line string
 

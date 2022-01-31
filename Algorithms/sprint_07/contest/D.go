@@ -11,7 +11,6 @@ const module = 1000000007
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Split(bufio.ScanLines)
 
 	var line string
 

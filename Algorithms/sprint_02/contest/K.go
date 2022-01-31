@@ -16,7 +16,6 @@ func fibonacci(n int) int {
 
 func main() {
 	scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
-	scanner.Split(bufio.ScanLines)
 
 	var line string
 

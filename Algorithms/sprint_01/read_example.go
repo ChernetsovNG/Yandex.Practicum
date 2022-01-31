@@ -16,7 +16,6 @@ func main() {
 	}
 	reader := bufio.NewReader(os.Stdin)
 	scanner := bufio.NewScanner(reader)
-	scanner.Split(bufio.ScanLines)
 
 	writer := bufio.NewWriter(os.Stdout)
 	for i := 1; i <= n; i++ {

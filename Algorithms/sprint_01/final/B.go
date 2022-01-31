@@ -10,7 +10,6 @@ import (
 // https://contest.yandex.ru/contest/22450/run-report/52379715/
 func main() {
 	scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
-	scanner.Split(bufio.ScanLines)
 
 	var line, gameField string
 

@@ -66,7 +66,6 @@ import (
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Split(bufio.ScanLines)
 
 	// читаем строки s и t
 	var s, t string

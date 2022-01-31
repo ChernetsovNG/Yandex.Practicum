@@ -88,7 +88,6 @@ func hash(key int) int {
 
 func main() {
 	scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
-	scanner.Split(bufio.ScanLines)
 	writer := bufio.NewWriter(os.Stdout)
 
 	var line string
