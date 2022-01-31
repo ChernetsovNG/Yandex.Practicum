@@ -66,12 +66,12 @@ func main() {
 	n, _ = strconv.Atoi(line)
 
 	// читаем заработанные в партиях очки, и вычисляем сумму очков во всех партиях k
-	a := make([]int, n+1)
-	k := 0
-
 	scanner.Scan()
 	line = scanner.Text()
 	values := strings.Split(line, " ")
+
+	a := make([]int, n+1)
+	k := 0
 
 	var value int
 	for i := 0; i < n; i++ {
