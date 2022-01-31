@@ -45,15 +45,10 @@ func main() {
 	prefixTree := newNode()
 
 	// запоминаем длину самого длинного слова из словаря
-	maxLen := -1
-
 	for i := 0; i < n; i++ {
 		scanner.Scan()
 		line = scanner.Text()
 		addString(prefixTree, line)
-		if len(line) > maxLen {
-			maxLen = len(line)
-		}
 	}
 
 	/*
@@ -70,45 +65,22 @@ func main() {
 	// или если для любого j от 1 до i-1 dp[j] = true и символы [j+1 ... i] являются словом из словаря
 	textSymbols := []rune(text)
 
-	currentNode := prefixTree
-	treeDepth := 0
-
-	for i := 0; i < len(text); i++ {
-		// сдвигаем курсор на символ
-		pos := position(textSymbols[i])
-
-		// спускаемся в дереве
-		currentNode = currentNode.edges[pos]
-		treeDepth += 1
-
-		if currentNode == nil { // дальше не можем опускаться в дереве => начинаем спуск от корня
-			currentNode = prefixTree
-			treeDepth = 0
-
-			dp[i+1] = false
-		} else if currentNode.isTerminal && i+1-treeDepth >= 0 && dp[i+1-treeDepth] == true {
-			dp[i+1] = true
-
-			// проверяем следующий символ, надо ли сбросить дерево снова до корня?
-			i++
-			if i < len(text) {
-				pos = position(textSymbols[i])
-
-				prevNode := currentNode
-				currentNode = currentNode.edges[pos]
-				treeDepth += 1
-
-				if currentNode == nil {
-					currentNode = prefixTree
-					treeDepth = 0
-				} else {
-					currentNode = prevNode
-					treeDepth -= 1
+	for l := 1; l <= len(text); l++ {
+		for i := 0; i < l; i++ {
+			if dp[i] {
+				currentNode := prefixTree
+				for j := i; j < l; j++ {
+					pos := position(textSymbols[j])
+					currentNode = currentNode.edges[pos]
+					if currentNode == nil {
+						break
+					}
 				}
-				i--
+				if currentNode != nil && currentNode.isTerminal {
+					dp[l] = true
+					break
+				}
 			}
-		} else {
-			dp[i+1] = false
 		}
 	}
 
