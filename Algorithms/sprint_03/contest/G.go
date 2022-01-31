@@ -41,12 +41,11 @@ func main() {
 	// читаем массив цветов предметов
 	colors := make([]int, n)
 
-	var value int
 	scanner.Scan()
 	row := scanner.Text()
 	values := strings.Split(row, " ")
 	for i := 0; i < n; i++ {
-		value, _ = strconv.Atoi(values[i])
+		value, _ := strconv.Atoi(values[i])
 		colors[i] = value
 	}
 

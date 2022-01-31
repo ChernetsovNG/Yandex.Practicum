@@ -26,12 +26,11 @@ func main() {
 	// читаем массив
 	numbers := make([]int, n)
 
-	var value int
 	scanner.Scan()
 	row := scanner.Text()
 	values := strings.Split(row, " ")
 	for i := 0; i < n; i++ {
-		value, _ = strconv.Atoi(values[i])
+		value, _ := strconv.Atoi(values[i])
 		numbers[i] = value
 	}
 

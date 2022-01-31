@@ -31,13 +31,12 @@ func main() {
 	}
 
 	// заполняем матрицу значениями
-	var value int
 	for i := 0; i < n; i++ {
 		scanner.Scan()
 		row := scanner.Text()
 		values := strings.Split(row, " ")
 		for j := 0; j < m; j++ {
-			value, _ = strconv.Atoi(values[j])
+			value, _ := strconv.Atoi(values[j])
 			matrix[i][j] = value
 		}
 	}

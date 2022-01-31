@@ -30,9 +30,8 @@ func main() {
 	line = scanner.Text()
 	values := strings.Split(line, " ")
 
-	var value int
 	for i := 0; i < n; i++ {
-		value, _ = strconv.Atoi(values[i])
+		value, _ := strconv.Atoi(values[i])
 		w[i+1] = value
 	}
 
