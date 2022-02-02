@@ -66,8 +66,6 @@ func main() {
 	buffer := make([]byte, maxCapacity)
 	scanner.Buffer(buffer, maxCapacity)
 
-	var line string
-
 	// читаем текст, который надо разбить на слова
 	scanner.Scan()
 	text := scanner.Text()
@@ -76,7 +74,7 @@ func main() {
 	var n int
 
 	scanner.Scan()
-	line = scanner.Text()
+	line := scanner.Text()
 	n, _ = strconv.Atoi(line)
 
 	// читаем допустимые к использованию слова и добавляем их в префиксное дерево

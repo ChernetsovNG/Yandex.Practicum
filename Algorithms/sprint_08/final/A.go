@@ -110,7 +110,7 @@ func unpack(packed []rune) ([]rune, int) {
 		packedSymbol := packed[i]
 		if isDigit(packedSymbol) && i < n {
 			nextSymbol := packed[i+1]
-			if isOpenSquareBracket(nextSymbol) {
+			if nextSymbol == '[' {
 				// вход в рекурсию: n[...
 				recurseSymbols := packed[i+2:]
 				recurseUnpack, closeBracketIndex := unpack(recurseSymbols)
@@ -122,7 +122,7 @@ func unpack(packed []rune) ([]rune, int) {
 				// чтобы не проходить заново рассмотренный участок строки
 				i += closeBracketIndex + 2
 			}
-		} else if isCloseSquareBracket(packedSymbol) {
+		} else if packedSymbol == ']' {
 			// ] - выход из рекурсии на предыдущий уровень
 			return result, i
 		} else {
@@ -136,20 +136,7 @@ func unpack(packed []rune) ([]rune, int) {
 
 // символ - число 0, 1, ..., 9
 func isDigit(r rune) bool {
-	i := int(r)
-	return 48 <= i && i <= 57
-}
-
-// символ - открывающая квадратная скобка [
-func isOpenSquareBracket(r rune) bool {
-	i := int(r)
-	return i == 91
-}
-
-// символ - закрывающая квадратная скобка ]
-func isCloseSquareBracket(r rune) bool {
-	i := int(r)
-	return i == 93
+	return '0' <= r && r <= '9'
 }
 
 // chr(48) - 0, ..., chr(57) - 9
